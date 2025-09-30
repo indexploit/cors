@@ -158,7 +158,7 @@ addEventListener("fetch", async event => {
             }
         } else {
             return new Response(
-		"Forbidden</br>\n" + "</br>\n",
+		"Forbidden</br>\n",
                 {
                     status: 403,
                     statusText: 'Forbidden',
