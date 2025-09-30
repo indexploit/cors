@@ -158,9 +158,7 @@ addEventListener("fetch", async event => {
             }
         } else {
             return new Response(
-		"Indexploit Proxy</br>\n" + "</br>\n" +
-		"Usage : <a href='https://paypal.me/Zibri/5'>https://paypal.me/Zibri/5</a></br>\n" +
-		"Donate : <a href='https://paypal.me/'>https://paypal.me/</a></br>\n",
+		"Forbidden</br>\n" + "</br>\n",
                 {
                     status: 403,
                     statusText: 'Forbidden',
