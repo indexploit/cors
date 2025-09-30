@@ -142,7 +142,6 @@ addEventListener("fetch", async event => {
                 }
 
                 return new Response(
-                    "CLOUDFLARE-CORS-ANYWHERE\n\n" +
                     "Usage:\n" +
                     originUrl.origin + "/?uri\n\n" +
                     (originHeader !== null ? "Origin: " + originHeader + "\n" : "") +
@@ -159,8 +158,9 @@ addEventListener("fetch", async event => {
             }
         } else {
             return new Response(
-		"This is a Proxy to be used by Indexploit</br>\n" + "</br>\n" +
-		"Current valid endpoint are cors/, url/ and s3tables_proxy/</br>\n",
+		"Indexploit Proxy</br>\n" + "</br>\n" +
+		"Usage : <a href='https://paypal.me/Zibri/5'>https://paypal.me/Zibri/5</a></br>\n" +
+		"Donate : <a href='https://paypal.me/'>https://paypal.me/</a></br>\n",
                 {
                     status: 403,
                     statusText: 'Forbidden',
