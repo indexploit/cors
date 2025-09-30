@@ -14,7 +14,6 @@ function isListedInWhitelist(uri, listing) {
     return isListed;
 }
 
-// Event listener for incoming fetch requests
 addEventListener("fetch", async event => {
     event.respondWith((async function() {
         const isPreflightRequest = (event.request.method === "OPTIONS");
@@ -23,8 +22,6 @@ addEventListener("fetch", async event => {
 
 	const url = new URL(originUrl);
 	const pathname = url.pathname;
-
-        // Function to modify headers to enable CORS
         function setupCORSHeaders(headers) {
             headers.set("Access-Control-Allow-Origin", event.request.headers.get("Origin"));
             if (isPreflightRequest) {
@@ -35,14 +32,14 @@ addEventListener("fetch", async event => {
                     headers.set("Access-Control-Allow-Headers", requestedHeaders);
                 }
 
-                headers.delete("X-Content-Type-Options"); // Remove X-Content-Type-Options header
+                headers.delete("X-Content-Type-Options");
             }
             return headers;
         }
 
 	
-	const CORSPROXY_ENDPOINT = '/corsproxy/'
-	const CORS_PROXY_ENDPOINT = '/go/'
+	const CORS_ENDPOINT = '/cors/'
+	const PROXY_ENDPOINT = '/url/'
 	const S3TABLES_ENDPOINT = '/s3tables_proxy/'
 	const S3TABLES_ENDPOINT_TEST = '/s3tables_proxy_test/'
 	const origin_to_string = originUrl.toString();
@@ -52,11 +49,11 @@ addEventListener("fetch", async event => {
 	let skipCF = false;
 	let needsCors = false;
 
-	if (pathname.startsWith(CORSPROXY_ENDPOINT) && pathname != CORSPROXY_ENDPOINT) {
-		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(CORSPROXY_ENDPOINT) + CORSPROXY_ENDPOINT.length);
+	if (pathname.startsWith(CORS_ENDPOINT) && pathname != CORS_ENDPOINT) {
+		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(CORS_ENDPOINT) + CORS_ENDPOINT.length);
 		needsCors = true;
-	} else if (pathname.startsWith(CORS_PROXY_ENDPOINT) && pathname != CORS_PROXY_ENDPOINT) {
-		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(CORS_PROXY_ENDPOINT) + CORS_PROXY_ENDPOINT.length);
+	} else if (pathname.startsWith(PROXY_ENDPOINT) && pathname != PROXY_ENDPOINT) {
+		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(PROXY_ENDPOINT) + PROXY_ENDPOINT.length);
 		needsCors = true;
 	} else if (pathname.startsWith(S3TABLES_ENDPOINT) && pathname != S3TABLES_ENDPOINT) {
 		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(S3TABLES_ENDPOINT) + S3TABLES_ENDPOINT.length);
@@ -145,8 +142,7 @@ addEventListener("fetch", async event => {
                 }
 
                 return new Response(
-                    "CLOUDFLARE-CORS-ANYWHERE for DuckDB-Wasm\n\n" +
-                    "Source:\nhttps://github.com/carlopi/cloudflare-cors-proxy\n\n" +
+                    "CLOUDFLARE-CORS-ANYWHERE\n\n" +
                     "Usage:\n" +
                     originUrl.origin + "/?uri\n\n" +
                     (originHeader !== null ? "Origin: " + originHeader + "\n" : "") +
@@ -164,7 +160,7 @@ addEventListener("fetch", async event => {
         } else {
             return new Response(
 		"This is a Proxy to be used by Indexploit</br>\n" + "</br>\n" +
-		"Current valid endpoint are corsproxy/, cors_proxy/ and s3tables_proxy/</br>\n",
+		"Current valid endpoint are cors/, url/ and s3tables_proxy/</br>\n",
                 {
                     status: 403,
                     statusText: 'Forbidden',
