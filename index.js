@@ -1,13 +1,9 @@
-const blacklistUrls = []; 
+const blacklistUrls = [];
 const whitelistOrigins = [ ".*" ];
 function isListedInWhitelist(uri, listing) {
     let isListed = false;
     if (typeof uri === "string") {
-        listing.forEach((pattern) => {
-            if (uri.match(pattern) !== null) {
-                isListed = true;
-            }
-        });
+        listing.forEach((pattern) => {if (uri.match(pattern) !== null) {isListed = true;}});
     } else {
         isListed = true;
     }
@@ -17,54 +13,46 @@ function isListedInWhitelist(uri, listing) {
 addEventListener("fetch", async event => {
     event.respondWith((async function() {
         const isPreflightRequest = (event.request.method === "OPTIONS");
-        
         const originUrl = new URL(event.request.url);
-
-	const url = new URL(originUrl);
-	const pathname = url.pathname;
+        const url = new URL(originUrl);
+        const pathname = url.pathname;
         function setupCORSHeaders(headers) {
             headers.set("Access-Control-Allow-Origin", event.request.headers.get("Origin"));
             if (isPreflightRequest) {
                 headers.set("Access-Control-Allow-Methods", event.request.headers.get("access-control-request-method"));
                 const requestedHeaders = event.request.headers.get("access-control-request-headers");
-
-                if (requestedHeaders) {
-                    headers.set("Access-Control-Allow-Headers", requestedHeaders);
-                }
-
+                if (requestedHeaders) {headers.set("Access-Control-Allow-Headers", requestedHeaders);}
                 headers.delete("X-Content-Type-Options");
             }
             return headers;
         }
-
-	
-	const CORS_ENDPOINT = '/cors/'
-	const PROXY_ENDPOINT = '/url/'
-	const S3TABLES_ENDPOINT = '/s3tables_proxy/'
-	const S3TABLES_ENDPOINT_TEST = '/s3tables_proxy_test/'
-	const origin_to_string = originUrl.toString();
-
-	let targetUrl = "";
-	let needsS3Tables = false;
-	let skipCF = false;
-	let needsCors = false;
-
-	if (pathname.startsWith(CORS_ENDPOINT) && pathname != CORS_ENDPOINT) {
-		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(CORS_ENDPOINT) + CORS_ENDPOINT.length);
-		needsCors = true;
-	} else if (pathname.startsWith(PROXY_ENDPOINT) && pathname != PROXY_ENDPOINT) {
-		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(PROXY_ENDPOINT) + PROXY_ENDPOINT.length);
-		needsCors = true;
-	} else if (pathname.startsWith(S3TABLES_ENDPOINT) && pathname != S3TABLES_ENDPOINT) {
-		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(S3TABLES_ENDPOINT) + S3TABLES_ENDPOINT.length);
-		needsCors = true;
-		needsS3Tables = true;
-	} else if (pathname.startsWith(S3TABLES_ENDPOINT_TEST) && pathname != S3TABLES_ENDPOINT_TEST) {
-		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(S3TABLES_ENDPOINT_TEST) + S3TABLES_ENDPOINT_TEST.length);
-		needsCors = true;
-		needsS3Tables = true;
-		skipCF = true;
-	}
+        const CORSPROXY_ENDPOINT = '/q/'
+        const CORS_PROXY_ENDPOINT = '/u/'
+        const S3TABLES_ENDPOINT = '/s3tables_proxy/'
+        const S3TABLES_ENDPOINT_TEST = '/s3tables_proxy_test/'
+        const origin_to_string = originUrl.toString();
+        
+        let targetUrl = "";
+        let needsS3Tables = false;
+        let skipCF = false;
+        let needsCors = false;
+        
+        if (pathname.startsWith(CORSPROXY_ENDPOINT) && pathname != CORSPROXY_ENDPOINT) {
+    		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(CORSPROXY_ENDPOINT) + CORSPROXY_ENDPOINT.length);
+    		needsCors = true;
+    	} else if (pathname.startsWith(CORS_PROXY_ENDPOINT) && pathname != CORS_PROXY_ENDPOINT) {
+    		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(CORS_PROXY_ENDPOINT) + CORS_PROXY_ENDPOINT.length);
+    		needsCors = true;
+    	} else if (pathname.startsWith(S3TABLES_ENDPOINT) && pathname != S3TABLES_ENDPOINT) {
+    		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(S3TABLES_ENDPOINT) + S3TABLES_ENDPOINT.length);
+    		needsCors = true;
+    		needsS3Tables = true;
+    	} else if (pathname.startsWith(S3TABLES_ENDPOINT_TEST) && pathname != S3TABLES_ENDPOINT_TEST) {
+    		targetUrl =    'https://' + origin_to_string.substr(origin_to_string.indexOf(S3TABLES_ENDPOINT_TEST) + S3TABLES_ENDPOINT_TEST.length);
+    		needsCors = true;
+    		needsS3Tables = true;
+    		skipCF = true;
+    	}
 
         const originHeader = event.request.headers.get("Origin");
         const connectingIp = event.request.headers.get("CF-Connecting-IP");
@@ -140,7 +128,7 @@ addEventListener("fetch", async event => {
                     country = event.request.cf.country || false;
                     colo = event.request.cf.colo || false;
                 }
-
+                
                 return new Response(
                     "Usage:\n" +
                     originUrl.origin + "/?uri\n\n" +
@@ -157,16 +145,7 @@ addEventListener("fetch", async event => {
                 );
             }
         } else {
-            return new Response(
-		"Forbidden</br>\n",
-                {
-                    status: 403,
-                    statusText: 'Forbidden',
-                    headers: {
-                        "Content-Type": "text/html"
-                    }
-                }
-            );
+            return new Response("Forbidden",{status: 403,statusText: 'Forbidden',headers: {"Content-Type": "text/html"}});
         }
     })());
 });
